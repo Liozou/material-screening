@@ -9,11 +9,17 @@ cp INPUT $NEWINPUT
 
 sed -i "s/Arg/${1}/g;s/UNITCELL/${2}/g;s/PRESSURES/${3}/g;s/RESTART/${4}/g;s/N_init/${5}/g" $NEWINPUT
 
+IFS=' '
+UNITCELL="${2}"
+read -ra unitcell_split <<< "$UNITCELL"
+FACTOR=`echo "${unitcell_split[0]} * ${unitcell_split[1]} * ${unitcell_split[2]}" | bc`
+
 NUMCATION='0'
 ISRESTART=`grep -Po "RestartFile[[:space:]]+\K.*" $NEWINPUT`
 if [ $ISRESTART == "no" ];
 then
     NUMCATION=`grep "^Alz_" $RASPA_DIR/share/raspa/structures/cif/${1}.cif | wc -l`
+    NUMCATION=`echo "$NUMCATION * $FACTOR" | bc`
 fi
 
 sed -i "s/NUMCATION/${NUMCATION}/g" $NEWINPUT
