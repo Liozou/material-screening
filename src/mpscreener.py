@@ -442,6 +442,10 @@ class Screening():
 
     def make_sequential_command(self, struc, unitcell, temperature, pressure_if_parallel):
         restart_string = 'yes' if self.RESTART else 'no'
+        if not isinstance(struc, pd.DataFrame):
+            struc = str(struc)
+        if not isinstance(unitcell, pd.DataFrame):
+            unitcell = str(unitcell)
         subcommand = "bash %s "%(self.path_to_run) + struc + " \"" + unitcell + "\""
         if temperature != -1:
             subcommand += (' ' + str(temperature))
